@@ -1,0 +1,135 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+class Account {
+private:
+    string accNo, name, pin;
+    double balance;
+
+public:
+    Account() : accNo(""), name(""), pin(""), balance(0.0) {}
+
+    void createAccount() {
+        cout << "\n=== Create New Account ===\n";
+        cout << "Enter Account Number: ";
+        cin >> accNo;
+        cout << "Enter Name: ";
+        cin.ignore();
+        getline(cin, name);
+        cout << "Set 4-digit PIN: ";
+        cin >> pin;
+        balance = 0.0;
+        cout << "✅ Account created successfully!\n";
+    }
+
+    bool login(string acc, string p) {
+        return (accNo == acc && pin == p);
+    }
+
+    void menu() {
+        int choice;
+        do {
+            cout << "\n=== ATM MENU (" << name << ") ===";
+            cout << "\n1. Check Balance\n2. Deposit\n3. Withdraw\n4. Logout\nEnter choice: ";
+            cin >> choice;
+
+            switch (choice) {
+                case 1:
+                    cout << "Your Balance: ₹" << fixed << setprecision(2) << balance << endl;
+                    break;
+                case 2:
+                    deposit();
+                    break;
+                case 3:
+                    withdraw();
+                    break;
+                case 4:
+                    cout << "Logging out...\n";
+                    break;
+                default:
+                    cout << "Invalid choice! Try again.\n";
+            }
+        } while (choice != 4);
+    }
+
+    void deposit() {
+        double amt;
+        cout << "Enter amount to deposit: ";
+        cin >> amt;
+        if (amt <= 0)
+            cout << "Amount must be positive!\n";
+        else {
+            balance += amt;
+            cout << "Deposited ₹" << amt << " successfully!\n";
+        }
+    }
+
+    void withdraw() {
+        double amt;
+        cout << "Enter amount to withdraw: ";
+        cin >> amt;
+        if (amt > balance)
+            cout << "Insufficient balance!\n";
+        else if (amt <= 0)
+            cout << "Invalid amount!\n";
+        else {
+            balance -= amt;
+            cout << "Withdrawal successful!\n";
+        }
+    }
+
+    string getAccNo() { return accNo; }
+    string getName() { return name; }
+};
+
+int main() {
+    Account accounts[5];
+    int accountCount = 0;
+
+    cout << "===== WELCOME TO SIMPLE ATM SYSTEM =====\n";
+
+    while (true) {
+        int choice;
+        cout << "\n1. Create Account\n2. Login\n3. Exit\nEnter choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            if (accountCount < 5) {
+                accounts[accountCount].createAccount();
+                accountCount++;
+            } else {
+                cout << "❌ Account limit reached (max 5 users)!\n";
+            }
+        } 
+        else if (choice == 2) {
+            string acc, pin;
+            cout << "Enter Account Number: ";
+            cin >> acc;
+            cout << "Enter PIN: ";
+            cin >> pin;
+
+            bool found = false;
+            for (int i = 0; i < accountCount; i++) {
+                if (accounts[i].login(acc, pin)) {
+                    cout << "\n✅ Login successful! Welcome, " << accounts[i].getName() << "!\n";
+                    accounts[i].menu();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                cout << "❌ Invalid login details!\n";
+        } 
+        else if (choice == 3) {
+            cout << "Thank you for using ATM System!\n";
+            break;
+        } 
+        else {
+            cout << "Invalid choice! Try again.\n";
+        }
+    }
+
+    return 0;
+}
